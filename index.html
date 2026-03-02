@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>照片相框</title>
+    <title>Gallery Curator</title>
     
     <script src="https://cdn.tailwindcss.com"></script>
     
@@ -17,20 +17,19 @@
         :root { --font-l: 'Inter'; --font-c: 'Playfair Display'; --font-r: 'JetBrains Mono'; }
         body { background-color: #080808; color: #eee; font-family: 'Inter', sans-serif; margin: 0; padding: 0; }
         
-        /* 响应式容器 */
         .app-container { display: flex; flex-direction: column; min-height: 100vh; }
         @media (min-width: 1024px) { .app-container { flex-direction: row; } }
         
         .sidebar-bg { background-color: #0f0f0f; border-top: 1px solid #222; }
-        @media (min-width: 1024px) { .sidebar-bg { width: 320px; border-top: none; border-left: 1px solid #222; } }
+        @media (min-width: 1024px) { .sidebar-bg { width: 340px; border-top: none; border-left: 1px solid #222; } }
         
         .custom-input { background-color: #1a1a1a; border: 1px solid #333; color: white; padding: 12px; border-radius: 6px; width: 100%; font-size: 14px; }
         .custom-select { background-color: #1a1a1a; border: 1px solid #333; color: white; padding: 12px; border-radius: 6px; width: 100%; font-size: 14px; cursor: pointer; -webkit-appearance: none; }
         
         .viewport-container { flex: 1; display: flex; align-items: center; justify-content: center; background: #000; padding: 15px; overflow: hidden; }
         #art-canvas { display: none; background: #ffffff; flex-direction: column; align-items: center; box-shadow: 0 10px 30px rgba(0,0,0,0.5); transition: all 0.2s ease; max-width: 100%; }
-        #p-img { max-width: 100%; max-height: 70vh; object-fit: contain; }
-        @media (min-width: 1024px) { #p-img { max-height: 80vh; } }
+        #p-img { max-width: 100%; max-height: 60vh; object-fit: contain; }
+        @media (min-width: 1024px) { #p-img { max-height: 75vh; } }
 
         /* 应用变量 */
         #out-model { font-family: var(--font-l), sans-serif !important; }
@@ -42,9 +41,14 @@
         optgroup { color: #3b82f6; font-style: normal; font-weight: bold; background: #000; }
         
         input::-webkit-outer-spin-button, input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
-        input[type=number] { -moz-appearance: textfield; }
+        input[type=number], input[type=range] { -moz-appearance: textfield; }
         
         #f-bar { padding: 20px !important; }
+
+        /* 滑块样式 */
+        input[type=range] { -webkit-appearance: none; background: transparent; width: 100%; }
+        input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; height: 16px; width: 16px; border-radius: 50%; background: #3b82f6; cursor: pointer; margin-top: -6px; }
+        input[type=range]::-webkit-slider-runnable-track { width: 100%; height: 4px; cursor: pointer; background: #333; border-radius: 2px; }
     </style>
 </head>
 <body>
@@ -55,14 +59,14 @@
                 <img id="p-img" src="">
                 <div id="f-bar" class="w-full flex justify-between items-end">
                     <div class="flex-1 flex flex-col">
-                        <div id="out-model" class="text-xl md:text-3xl font-black tracking-tighter leading-none">---</div>
+                        <div id="out-model" class="font-black tracking-tighter leading-none">---</div>
                     </div>
                     <div class="flex-1 flex justify-center">
-                        <div id="out-logo" class="text-xl md:text-3xl px-2 uppercase">---</div>
+                        <div id="out-logo" class="px-2 uppercase">---</div>
                     </div>
                     <div class="flex-1 flex flex-col items-end text-right">
-                        <div id="out-params" class="text-xs md:text-base font-bold tracking-tight uppercase">---</div>
-                        <div id="out-date" class="text-[9px] md:text-[11px] opacity-70 mt-1 font-mono">---</div>
+                        <div id="out-params" class="font-bold tracking-tight uppercase">---</div>
+                        <div id="out-date" class="opacity-70 mt-1 font-mono">---</div>
                     </div>
                 </div>
             </div>
@@ -110,16 +114,25 @@
                 </div>
             </div>
 
-            <div class="space-y-2">
-                <input type="text" id="i-model" class="custom-input" placeholder="相机型号">
-                <select id="s-font-left" class="custom-select font-dropdown"></select>
+            <div class="space-y-3">
+                <div class="bg-white/5 p-2 rounded-lg border border-white/5 space-y-1">
+                    <input type="text" id="i-model" class="custom-input !py-2" placeholder="相机型号">
+                    <select id="s-font-left" class="custom-select !py-2 font-dropdown"></select>
+                    <label class="text-[9px] text-gray-400 block pt-1">大小: <input type="range" id="size-model" min="12" max="60" value="20"></label>
+                </div>
                 
-                <input type="text" id="i-logo" class="custom-input" placeholder="品牌标识">
-                <select id="s-font-center" class="custom-select font-dropdown"></select>
+                <div class="bg-white/5 p-2 rounded-lg border border-white/5 space-y-1">
+                    <input type="text" id="i-logo" class="custom-input !py-2" placeholder="品牌标识">
+                    <select id="s-font-center" class="custom-select !py-2 font-dropdown"></select>
+                    <label class="text-[9px] text-gray-400 block pt-1">大小: <input type="range" id="size-logo" min="12" max="60" value="30"></label>
+                </div>
                 
-                <input type="text" id="i-params" class="custom-input" placeholder="参数">
-                <input type="text" id="i-date" class="custom-input" placeholder="日期">
-                <select id="s-font-right" class="custom-select font-dropdown"></select>
+                <div class="bg-white/5 p-2 rounded-lg border border-white/5 space-y-1">
+                    <input type="text" id="i-params" class="custom-input !py-2" placeholder="参数">
+                    <input type="text" id="i-date" class="custom-input !py-2" placeholder="日期">
+                    <select id="s-font-right" class="custom-select !py-2 font-dropdown"></select>
+                    <label class="text-[9px] text-gray-400 block pt-1">大小: <input type="range" id="size-params" min="8" max="30" value="16"></label>
+                </div>
             </div>
 
             <div class="flex gap-2">
@@ -147,7 +160,7 @@
             const txtColor = $('#c-txt').val();
             const bgColor = $('#c-bg').val();
             
-            // 应用独立留白，默认为50
+            // 应用留白
             $('#art-canvas').css({
                 'padding-top': ($('#pad-t').val() || 50) + "px",
                 'padding-bottom': ($('#pad-b').val() || 50) + "px",
@@ -155,6 +168,12 @@
                 'padding-right': ($('#pad-r').val() || 50) + "px",
                 'background-color': bgColor
             });
+
+            // 应用大小控制
+            $('#out-model').css('font-size', $('#size-model').val() + "px");
+            $('#out-logo').css('font-size', $('#size-logo').val() + "px");
+            $('#out-params').css('font-size', $('#size-params').val() + "px");
+            $('#out-date').css('font-size', (parseInt($('#size-params').val()) * 0.7) + "px");
 
             // 文字色彩与透明度
             const isDark = (parseInt(bgColor.substring(1), 16) < 0xffffff / 2);
@@ -200,11 +219,10 @@
         });
 
         $('#save-btn').click(function() {
-            // 提高导出清晰度
             html2canvas($('#art-canvas')[0], { scale: 3, useCORS: true }).then(canvas => {
                 const link = document.createElement('a');
                 link.href = canvas.toDataURL("image/png");
-                link.download = `Universal_Gallery_${Date.now()}.png`;
+                link.download = `Precision_Gallery_${Date.now()}.png`;
                 link.click();
             });
         });
